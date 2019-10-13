@@ -1,12 +1,14 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./router/userRouter');
 const requestRouter = require('./router/requestRouter');
 
 const app = express();
 
 app.use(morgan('dev'));
+app.use(express.json());
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/requests', requestRouter);
@@ -17,5 +19,7 @@ app.use('*', (req, res) => {
     response: 'route no defined'
   });
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;
