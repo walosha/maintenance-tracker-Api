@@ -18,8 +18,8 @@ Features include
 
 ---
 
-> **To start the project**
-> npm run start`
+> **To start the project**  
+> npm run start
 
 > **To build the project**
-> npm run start`
+> npm run start
