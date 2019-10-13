@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const User = require('../model/userModel');
 
 const tokenSign = function(id) {
@@ -36,4 +37,25 @@ const createTokenAndSend = function(user, statusCode, res) {
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
   createTokenAndSend(newUser, 201, res);
+});
+
+exports.signin = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new AppError('Please provide an email or password!', 400));
+  }
+
+  const user = await User.findOne({ email }).select('+password');
+
+  //  CHECK IF USER PASSWORD IS SAME AS THAT ON DATABASE
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(
+      new AppError('You have supplied an invalid emaill or password!'),
+      401
+    );
+  }
+
+  createTokenAndSend(user, 200, res);
 });

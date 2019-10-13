@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bycrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
-    type: String,
-    required: [true, 'Name is required. Please provide a name']
+    type: String
   },
   email: {
     type: String,
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'PasswordConfirme is required'],
+    required: [true, 'PasswordConfirm is required'],
     validate: {
       // THIS ONLY WORKS ON SAVE or CREATE
       validator: function(el) {
@@ -39,6 +39,22 @@ const userSchema = new mongoose.Schema({
   passwordResetToken: String,
   passwordResetExpiry: Date
 });
+
+userSchema.pre('save', async function(next) {
+  // RUN THIS IF PASSWORD IS NOT MODIFIED
+  if (!this.isModified('password')) return next();
+  // RUN THIS IF PASSWORD IS CREATED OR MODIFIED
+  this.password = await bycrypt.hash(this.password, 16);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.methods.correctPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bycrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
