@@ -1,14 +1,21 @@
 const express = require('express');
+const morgan = require('morgan');
+
+const userRouter = require('./router/userRouter');
+const requestRouter = require('./router/requestRouter');
 
 const app = express();
 
-app.get('/', (req, res) => {
-  return res.status(200).json({
-    status: 'sucess',
-    data: 'result'
+app.use(morgan('dev'));
+
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/requests', requestRouter);
+
+app.use('*', (req, res) => {
+  res.status(404).json({
+    status: 'Bad Request',
+    response: 'route no defined'
   });
 });
 
-app.listen('3000', () => {
-  console.log('Server is listening on port 3000');
-});
+module.exports = app;
