@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bycrypt = require('bcryptjs');
@@ -54,6 +55,55 @@ userSchema.methods.correctPassword = async function(
   userPassword
 ) {
   return await bycrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passswordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function(next) {
+  this.find({ active: true });
+  //this.find({ active: { $ne: false } }); Used when there are other documents that are neither true or false
+  next();
+});
+
+// THIS COMAPARE PASSWORD INPUT BY USER AND THE ONE ON DB BY FIRST DECRPTYING IT
+userSchema.methods.correctPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bycrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.passswordChangedAter = function(JWTTimestamp) {
+  if (this.changedPasswordAt) {
+    const changedTimeStamp = parseInt(
+      this.passswordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimeStamp;
+  }
+  return false;
+};
+
+userSchema.methods.createPasswordResetToken = function() {
+  //GENERATING RESET TOKEN FOR USERS
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // ENCRYPTING RESETTOKEN TO BE SAVED TO DATABASE
+
+  this.passwordResetExpiry = Date.now() + 10 * 60 * 1000;
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
