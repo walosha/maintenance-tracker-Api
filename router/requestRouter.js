@@ -2,7 +2,7 @@ const express = require('express');
 const requestController = require('../controllers/requestController');
 const authController = require('../controllers/authController');
 
-const Router = express.Router();
+const Router = express.Router({ mergeParams: true });
 
 Router.use(authController.protect);
 
@@ -14,4 +14,5 @@ Router.route('/:id')
   .get(requestController.getOneRequests)
   .patch(requestController.editRequest)
   .delete(requestController.deleteRequest);
+
 module.exports = Router;

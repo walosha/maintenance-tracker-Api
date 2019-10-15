@@ -17,7 +17,10 @@ exports.getOneRequests = async (req, res, next) => {
 };
 
 exports.getAllRequests = async (req, res, next) => {
-  const requests = await Request.find();
+  console.log(req.user.id);
+  const requests = await Request.find().populate({
+    path: 'user'
+  });
 
   if (!requests) {
     return next(new AppError('No document found', 404));
@@ -33,11 +36,16 @@ exports.getAllRequests = async (req, res, next) => {
 };
 
 exports.createRequest = catchAsync(async (req, res, next) => {
-  const { title, request, user } = req.body;
+  const { title, request } = req.body;
+  if (!req.body.user) req.body.user = req.user.id;
   if (!title || !request)
     return next(new AppError('Please provide a title or a request!', 404));
 
-  const newRequest = await Request.create({ title, request, user });
+  const newRequest = await Request.create({
+    title,
+    request,
+    user: req.body.user
+  });
   res.status(200).json({
     status: 'sucess',
     data: {

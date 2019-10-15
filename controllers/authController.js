@@ -1,4 +1,4 @@
-const promisify = require('util');
+const { promisify } = require('util');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const sgMail = require('@sendgrid/mail');
