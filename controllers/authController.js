@@ -195,7 +195,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   try {
     await sgMail.send({
       to: user.email,
-      from: '<akinolabest@gmail.com>',
+      from: '<admin@maintenanceTracker.com.ng>',
       subject: `${user.name}, your Password Reset Token ( Valid for 10mins!)`,
       text: message
       // html: `<p>${message}</p>`

@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -15,14 +16,18 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'dev-data/templates'));
+
+// GLOBAL MIDDLEWARES
+
+//SERVING OF STATIC FILES
+
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/requests', requestRouter);
 
-app.use('*', (req, res) => {
-  res.status(404).json({
-    status: 'Bad Request',
-    response: 'route no defined'
-  });
+app.get('*', (req, res) => {
+  res.status(404).render('error');
 });
 
 app.use(globalErrorHandler);
