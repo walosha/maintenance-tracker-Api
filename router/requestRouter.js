@@ -1,7 +1,10 @@
 const express = require('express');
 const requestController = require('../controllers/requestController');
+const authController = require('../controllers/authController');
 
 const Router = express.Router();
+
+Router.use(authController.protect);
 
 Router.route('/')
   .get(requestController.getAllRequests)
