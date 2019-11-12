@@ -17,7 +17,7 @@ const tokenSign = function(id) {
 
 const createTokenAndSend = function(user, statusCode, res) {
   const token = tokenSign(user._id);
-
+  user.password = undefined;
   // SENDING JWY VIA COOKIES
   const cookiesOptions = {
     expires: new Date(
@@ -75,7 +75,7 @@ exports.logout = (req, res) => {
   });
 };
 
-exports.protect = async (req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   // CHECK TOKEN AND
   let token;
   if (
@@ -114,9 +114,9 @@ exports.protect = async (req, res, next) => {
 
   req.user = currentUser;
   next();
-};
+});
 
-exports.isLoggedIn = async (req, res, next) => {
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // CHECK TOKEN AND GET IF IT IS THERE
 
   if (req.cookies.jwt) {
@@ -150,7 +150,7 @@ exports.isLoggedIn = async (req, res, next) => {
     }
   }
   next();
-};
+});
 
 exports.restrict = (...roles) => {
   return (req, res, next) => {
