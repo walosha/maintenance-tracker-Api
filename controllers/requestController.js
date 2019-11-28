@@ -17,7 +17,7 @@ exports.getOneRequests = async (req, res, next) => {
 };
 
 exports.getAllRequests = async (req, res, next) => {
-  console.log(req.user.id);
+  console.log(req.user.role);
   const requests = await Request.find().populate({
     path: 'user'
   });
@@ -60,7 +60,6 @@ exports.editRequest = async (req, res, next) => {
     runValidators: true
   });
 
-  console.log(req.body);
   if (!request) {
     return next(new AppError('No document found with that ID', 404));
   }

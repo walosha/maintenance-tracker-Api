@@ -190,7 +190,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${resetToken}`;
 
   const message = `You forgot your password ? Submit a patch request with your newpassword and confirmPassword to the reset Url : ${resetURL}\n If you didn't forget your password ignore this email.\n Olawale Afuye  `;
-  console.log(message);
+ 
 
   try {
     await sgMail.send({
@@ -229,7 +229,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashToken,
     passwordResetExpiry: { $gt: Date.now() }
   });
-  console.log('useer', req.params.token);
   if (!user) {
     return next(new AppError('Token has expired or is expired', 400));
   }
