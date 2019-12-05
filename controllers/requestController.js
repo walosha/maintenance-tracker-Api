@@ -17,14 +17,20 @@ exports.getOneRequests = async (req, res, next) => {
 };
 
 exports.getAllRequests = async (req, res, next) => {
-  console.log(req.user.role);
-  const requests = await Request.find().populate({
-    path: 'user'
-  });
+  let requests;
+  if (req.user.role === 'user') {
+    requests = await Request.find({ user: req.user.id });
+  } else {
+    requests = await Request.find().populate({
+      path: 'user'
+    });
+  }
 
   if (!requests) {
     return next(new AppError('No document found', 404));
   }
+
+  console.log(req.user.name);
 
   res.status(200).json({
     status: 'sucess',
