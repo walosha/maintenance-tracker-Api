@@ -78,6 +78,7 @@ exports.logout = (req, res) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // CHECK TOKEN AND
   let token;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -190,7 +191,6 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${resetToken}`;
 
   const message = `You forgot your password ? Submit a patch request with your newpassword and confirmPassword to the reset Url : ${resetURL}\n If you didn't forget your password ignore this email.\n Olawale Afuye  `;
- 
 
   try {
     await sgMail.send({

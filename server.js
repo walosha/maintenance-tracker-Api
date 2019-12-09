@@ -1,9 +1,16 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const Sentry = require('@sentry/node');
+const cloudinary = require('cloudinary').v2;
 
 Sentry.init({
-  dsn: 'https://c634bae5a8694bcb8c7f58b2d6c6285f@sentry.io/1837736'
+  dsn: process.env.SENTRY_DSN
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_NAME_API_KEY,
+  api_secret: process.env.CLOUD_NAME_API_SECRET
 });
 
 const app = require('./app');

@@ -30,8 +30,6 @@ exports.getAllRequests = async (req, res, next) => {
     return next(new AppError('No document found', 404));
   }
 
-  console.log(req.user.name);
-
   res.status(200).json({
     status: 'sucess',
     request: requests.length,

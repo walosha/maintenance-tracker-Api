@@ -1,6 +1,30 @@
+const multer = require('multer');
 const User = require('../model/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'public/images'),
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+  }
+});
+const multerFilter = (req, file, cb) => {
+  console.log(file);
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(
+      new AppError('This is not an image!, please upload an Image', 400),
+      false
+    );
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadImages = upload.single('profile');
 
 // Filter based on the criteria passed in
 const filterObj = (obj, ...allowedFields) => {
@@ -50,10 +74,37 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 });
 
 exports.getMe = catchAsync(async (req, res, next) => {
+  console.log(req.user);
   res.status(200).json({
     status: 'sucess',
     data: {
       user: req.user
+    }
+  });
+});
+
+exports.profileImage = catchAsync(async (req, res, next) => {
+  let image = req.file.filename;
+  console.log(image);
+  // res.setHeader('Content-Type', 'application/form-data');
+
+  if (!image) {
+    return new AppError('Upload an Image', 400);
+  }
+
+  image = await User.findByIdAndUpdate(
+    req.user.id,
+    { image },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  res.status(200).json({
+    status: 'sucess',
+    data: {
+      image
     }
   });
 });

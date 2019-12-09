@@ -16,12 +16,15 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'dev-data/templates'));
-
-// GLOBAL MIDDLEWARES
+//serving view files
+// app.set('view engine', 'pug');
+// app.set('views', path.join(__dirname, 'dev-data/templates'));
 
 //SERVING OF STATIC FILES
+
+app.use(express.static(`${__dirname}/public`));
+
+// GLOBAL MIDDLEWARES
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/requests', requestRouter);
